@@ -1,1 +1,1 @@
-# dotfull durak with cli interface in c# 
+# dotfool durak (fool) card game with cli interface in c# 

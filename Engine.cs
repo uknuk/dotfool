@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace dotfull
+namespace dotfool
 {
   public class Engine
   {
     private List<int> hand = new List<int>();
-    private List<int> order;
-    private Card[] pack;
+    private Card card;
+    private Pack pack;
     private int trump;
 
-    public Engine(Card[] pack, List<int> order)
+    public Engine(Pack pack)
     {
       this.pack = pack;
-      this.order = order;
-        for (int n = 0; n < Game.MinHand; n++)
-          hand.Add(order[2*n]);
-      
-      trump = pack[order[Game.NCards - 1]].suit;     
+      for (int n = 0; n < Game.MinHand; n++)
+          hand.Add(pack.Take());
+      trump = pack.trump.suit;
+    }
+
+  public Card Defend(int idx)
+    {
+      Card card = pack.cards[idx];
+      // select hand cards from pack by uning linq
+      // find the defending card
+      return card;
     }
   }
 }
