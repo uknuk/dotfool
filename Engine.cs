@@ -4,31 +4,37 @@ using System.Linq;
 
 namespace dotfool
 {
-  public class Engine
+  public class Engine : Player
   {
-    public Hand hand;
-    private int trump;
-
-    public Engine(Pack pack)
+    public override Card Defend(Card aCard)
     {
-      hand = new Hand(pack);
-      trump = pack.Trump.Suit;
-    }
-
-    public Card Defend(Card aCard)
-    {
-      Card dCard = hand.GetLeastRank(aCard.Suit, aCard.Rank);
+      Card dCard = LeastRank(aCard.Suit, aCard.Rank);
       
       if (dCard == null)
-        dCard = hand.GetLeastRank(trump, aCard.Rank);
+        dCard = LeastRank(trump, aCard.Rank);
         
       if (dCard != null)
-        hand.Remove(dCard);
+        Pass(dCard);
+
       return dCard;
     }
-   
 
-  
-  }
+    public override Card Attack()
+    {
+      var cards = from card in hand 
+        where card.Suit != trump
+        orderby card.Rank select card;
+
+      Card aCard = cards.First();
+      Pass(aCard);
+      return aCard;
+    }
+
+    public override void Message()
+    {
+      Console.WriteLine("Sorry but you gotta take it");
+    }
+
+  } 
 }
 

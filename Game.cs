@@ -5,107 +5,146 @@ using System.Linq;
 
 namespace dotfool
 {
+  public class Player
+  {
+    const int MinHand = 6;
+    protected int trump;
+    protected List<Card> hand = new List<Card>();
 
+    public Player()
+    {
+      trump = Game.pack.Trump();
+    }
+
+    public void Fill()
+    {
+      int size = MinHand - hand.Count;
+      for (int i = 0; i < size; i++)
+      {
+        hand.Add(Game.pack.Take());
+      }
+    }
+
+    protected void Pass(Card card)
+    {
+      card.Show();
+      hand.Remove(card);
+      Game.table.Add(card);
+    }
+
+    protected Card LeastRank(int suit, int rank)
+    {
+      var cards = from card in hand
+                         where card.Suit == suit && card.Rank > rank
+                         orderby card.Rank
+                         select card;
+
+      return cards.Count() > 0 ? cards.First() : null;
+    }
+
+    public Card LeastTrump()
+    {
+      return LeastRank(trump, -1);
+    }
+
+    public virtual Card Attack()
+    {
+      return null;
+    }
+
+    public virtual Card Defend(Card card)
+    {
+      return null;
+    }
+
+    public virtual void Show()
+    {
+      Console.WriteLine("Not implemented");
+    }
+
+    public virtual void Message()
+    {
+      Console.WriteLine();
+    }
+  }
 
   class Game
   {
-   
-    static Pack pack = new Pack();
-    static Hand hand = new Hand(pack);
-    static Engine engine = new Engine(pack);
-    static List<Card> table = new List<Card>();
-    static Boolean playerTurn;
+    const int HUMAN = 0;
+    const int ENGINE = 1;
+    public static Pack pack = new Pack();
+    public static List<Card> table = new List<Card>();
+    static Player[] players = { new Human(), new Engine() };
+    static int turn;
 
     public static void Main(string[] args)
     {
-      Boolean over = false;
-      while (!over)
-        {
-          Play();
-        }
+      while (true)
+      {
+        Play();
+      }
     }
 
     static void Play()
     {
 
-      Boolean done = false;
-      string choice;
-      Card attack;
-      Card resp;
+      Boolean play = true;
 
-      hand.Fill();
-      engine.hand.Fill();
+      foreach (Player p in players) 
+        p.Fill();
       
       if (!table.Any())
         SetTurn();
       else
         table.Clear();
 
-      Console.WriteLine($"New act: {pack.Trump.Code} {pack.Size()} cards left");
+      Console.WriteLine($"New act: {pack.TrumpCode()} {pack.Size()} cards left");
       
-      while (!done)
-        {  
-          hand.Show();
-          Console.Write("Your move: ");
-          choice = Console.ReadLine();
-          if (choice == "b")
-            {
-              if (table.Count > 0)
-                playerTurn = !playerTurn;
-              // future version will store table for engine 
-              continue;
-            }
-            
-          attack = hand[Convert.ToInt32(choice)];
-          if (!Verify(attack))
-            {
-              Console.WriteLine("Don't cheat!!!");
-              continue;
-            }
-          hand.Remove(attack);
-          table.Add(attack);
-          attack.Show();
-          resp = engine.Defend(attack);
-          if (resp == null)
-            {
-              done = true;
-              engine.hand.AddRange(table);
-              Console.WriteLine("Congrats! Engine is beaten ane takes the table");
-            } else
-            {
-              table.Add(resp);
-              Console.WriteLine($" {resp.Code}"); 
-            }
-        }
+      do {  
+        play = Act();
+      } while (play);
     }
 
+    static Boolean Act() 
+    { 
+      players[0].Show();
+      Card attack = players[turn].Attack();
+      if (attack == null) 
+      {
+        turn = 1 - turn;
+        // future version will store table for engine
+        return false;
+      }
+
+      Card resp = players[1 - turn].Defend(attack);
+      if (resp == null)
+      {
+        players[turn].Message();
+        return false;
+      }
+      else
+        Console.WriteLine();
+
+      return true;
+    }
+      
     static void SetTurn()
     {
-      Card human = hand.GetLeastRank(pack.Trump.Suit, -1);
-      if (human == null)
-        playerTurn = false;
-      else
-        {
-          Card comp = engine.hand.GetLeastRank(pack.Trump.Suit, -1);
-          if (comp != null)
-            playerTurn = human.Rank > comp.Rank;
-          else
-            playerTurn = true;
-        }
-    }
 
-    static Boolean Verify(Card attack)
-    {
-      if (table.Count == 0)
-        return true;
-            
-      var cards = 
-        from card in table
-              where card.Rank == attack.Rank
-              select card;
-      return cards.Count() > 0;
-    }
+      var cards = players.Select(p => p.LeastTrump());
+      if (cards.First() == null)
+        turn = ENGINE;
+      else
+      {
+        if (cards.Last() != null)
+        {
+          var ranks = cards.Select(c => c.Rank);
+          turn = ranks.First() > ranks.Last() ? HUMAN : ENGINE;
+        }
+        else
+          turn = HUMAN;
+      }
+    }   
   
-  }
-      
+  }    
 }

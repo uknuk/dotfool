@@ -36,10 +36,7 @@ namespace dotfool
       Console.Write($" {code} ");
     }
         
-  }
-    
-    
-            
+  }           
 
   public class Pack
   {
@@ -48,7 +45,7 @@ namespace dotfool
     const int NCards = NSuits * NRanks;
     public Card[] cards = new Card[NCards];
     private List<int> order;
-    public Card Trump;
+    private Card trump;
 
     public Pack()
     {
@@ -80,7 +77,7 @@ namespace dotfool
 
       Random rnd = new Random();
       order = Enumerable.Range(0, NCards).OrderBy(r => rnd.Next()).ToList(); 
-      Trump = cards[order.Last()];
+      trump = cards[order.Last()];
     }
 
     public Card Take()
@@ -93,6 +90,16 @@ namespace dotfool
     public int Size()
     {
       return order.Count;
+    }
+
+    public int Trump()
+    {
+      return trump.Suit;
+    }
+
+    public string TrumpCode()
+    {
+      return trump.Code;
     }
         
   }
