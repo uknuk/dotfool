@@ -9,17 +9,15 @@ namespace dotfool
 
   class Game
   {
-    public const int MinHand = 6;
-    enum Turns {Player, Engine};
-    static Pack pack = new Pack();
-    static List<int> hand = new List<int>();
-    static Engine engine;
-
    
+    static Pack pack = new Pack();
+    static Hand hand = new Hand(pack);
+    static Engine engine = new Engine(pack);
+    static List<Card> table = new List<Card>();
+    static Boolean playerTurn;
+
     public static void Main(string[] args)
     {
-      Console.OutputEncoding = System.Text.Encoding.UTF8;     
-      Init();
       Boolean over = false;
       while (!over)
         {
@@ -29,29 +27,83 @@ namespace dotfool
 
     static void Play()
     {
-      pack.ShowTrump();
-      pack.ShowHand(hand);
+
       Boolean done = false;
-      int picked;
+      string choice;
+      Card attack;
+      Card resp;
+
+      hand.Fill();
+      engine.hand.Fill();
+      
+      if (!table.Any())
+        SetTurn();
+      else
+        table.Clear();
+
+      Console.WriteLine($"New act: {pack.Trump.Code} {pack.Size()} cards left");
+      
       while (!done)
-        {
+        {  
+          hand.Show();
           Console.Write("Your move: ");
-          picked = hand[Convert.ToInt32(Console.ReadLine())];
-          pack.ShowCard(picked);
-          // engine.Defend(picked);
-          
-          
+          choice = Console.ReadLine();
+          if (choice == "b")
+            {
+              if (table.Count > 0)
+                playerTurn = !playerTurn;
+              // future version will store table for engine 
+              continue;
+            }
+            
+          attack = hand[Convert.ToInt32(choice)];
+          if (!Verify(attack))
+            {
+              Console.WriteLine("Don't cheat!!!");
+              continue;
+            }
+          hand.Remove(attack);
+          table.Add(attack);
+          attack.Show();
+          resp = engine.Defend(attack);
+          if (resp == null)
+            {
+              done = true;
+              engine.hand.AddRange(table);
+              Console.WriteLine("Congrats! Engine is beaten ane takes the table");
+            } else
+            {
+              table.Add(resp);
+              Console.WriteLine($" {resp.Code}"); 
+            }
         }
     }
 
-
-    static void Init()
+    static void SetTurn()
     {
-      for (int i = 0; i < MinHand; i++)
+      Card human = hand.GetLeastRank(pack.Trump.Suit, -1);
+      if (human == null)
+        playerTurn = false;
+      else
         {
-            hand.Add(pack.Take());
+          Card comp = engine.hand.GetLeastRank(pack.Trump.Suit, -1);
+          if (comp != null)
+            playerTurn = human.Rank > comp.Rank;
+          else
+            playerTurn = true;
         }
-      engine = new Engine(pack);
+    }
+
+    static Boolean Verify(Card attack)
+    {
+      if (table.Count == 0)
+        return true;
+            
+      var cards = 
+        from card in table
+              where card.Rank == attack.Rank
+              select card;
+      return cards.Count() > 0;
     }
   
   }

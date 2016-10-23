@@ -6,22 +6,40 @@ using System.Linq;
 namespace dotfool
 {
 
-  public class Card : Tuple<int, int>
+  public class Card
   {
-    public Card(int suit, int rank)
-      : base(suit, rank)
+    private int rank;
+    private int suit;
+    private string code;
+
+    public Card(int suit, int rank, string code)
     {
+      this.rank = rank;
+      this.suit = suit;
+      this.code = code;
     }
 
-    public int suit { 
-      get { return this.Item1; }
+    public int Suit {
+      get { return suit; }
     }
 
-    public int rank {
-      get { return this.Item2; }
+    public int Rank {
+      get { return rank; }
     }
-    // put compare here
+
+    public string Code {
+      get { return code; }
+    }
+
+    public void Show()
+    {
+      Console.Write($" {code} ");
+    }
+        
   }
+    
+    
+            
 
   public class Pack
   {
@@ -29,9 +47,8 @@ namespace dotfool
     const int NRanks = 9;
     const int NCards = NSuits * NRanks;
     public Card[] cards = new Card[NCards];
-    private string[,] codes = new string[NSuits, NRanks];
     private List<int> order;
-    public Card trump;
+    public Card Trump;
 
     public Pack()
     {
@@ -45,8 +62,9 @@ namespace dotfool
         {
           byte ace = suits[i];
           code[0] = ace;
-          codes[i, 8] = Encoding.UTF32.GetString(code);
-          cards[i * NRanks + 8] = new Card(i, 8);
+          cards[i * NRanks + 8] = 
+              new Card(i, 8, Encoding.UTF32.GetString(code));
+            
           for (byte j = 5; j < 14; j++)
             {
               if (j == 11)
@@ -55,45 +73,28 @@ namespace dotfool
               k = j - (j < 11 ? 5 : 6); 
 
               code[0] = (byte)(ace + j);
-              codes[i, k] = Encoding.UTF32.GetString(code);
-              cards[i * NRanks + k] = new Card(i, k); 
+              cards[i * NRanks + k] = 
+                  new Card(i, k, Encoding.UTF32.GetString(code)); 
             }
         }
 
       Random rnd = new Random();
       order = Enumerable.Range(0, NCards).OrderBy(r => rnd.Next()).ToList(); 
-      trump = cards[order.Last()];
+      Trump = cards[order.Last()];
     }
 
-    public int Take()
+    public Card Take()
     {
       int idx = order[0];
       order.RemoveAt(0);
-      return idx;
+      return cards[idx];
+    }
+
+    public int Size()
+    {
+      return order.Count;
     }
         
-    public void ShowTrump()
-    {
-      Console.WriteLine($"{codes[trump.suit, trump.rank]}  {order.Count} cards left");
-    }
-
-    public void ShowCard(int idx)
-    {
-      Card card = cards[idx];
-      Console.Write($"You: {codes[card.suit, card.rank]} ");
-    }
-
-    public void ShowHand(List<int> hand)
-    {
-      Console.Write("Your hand: ");
-      for (int i = 0; i < hand.Count; i++)
-        {
-          Card card = cards[hand[i]];
-          Console.Write($"{i}: {codes[card.suit, card.rank]}   ");
-        }
-      Console.WriteLine();
-    }
-
   }
 }
 

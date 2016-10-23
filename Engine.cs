@@ -1,30 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace dotfool
 {
   public class Engine
   {
-    private List<int> hand = new List<int>();
-    private Card card;
-    private Pack pack;
+    public Hand hand;
     private int trump;
 
     public Engine(Pack pack)
     {
-      this.pack = pack;
-      for (int n = 0; n < Game.MinHand; n++)
-          hand.Add(pack.Take());
-      trump = pack.trump.suit;
+      hand = new Hand(pack);
+      trump = pack.Trump.Suit;
     }
 
-  public Card Defend(int idx)
+    public Card Defend(Card aCard)
     {
-      Card card = pack.cards[idx];
-      // select hand cards from pack by uning linq
-      // find the defending card
-      return card;
+      Card dCard = hand.GetLeastRank(aCard.Suit, aCard.Rank);
+      
+      if (dCard == null)
+        dCard = hand.GetLeastRank(trump, aCard.Rank);
+        
+      if (dCard != null)
+        hand.Remove(dCard);
+      return dCard;
     }
+   
+
+  
   }
 }
 
