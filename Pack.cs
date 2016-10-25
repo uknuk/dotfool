@@ -19,12 +19,32 @@ namespace dotfool
       this.code = code;
     }
 
-    public int Suit {
+    public int Suit 
+    {
       get { return suit; }
     }
 
-    public int Rank {
+    public int Rank 
+    {
       get { return rank; }
+    }
+
+    public int Value 
+    {
+      get 
+      {
+        return suit == Game.pack.Trump() ? 10 + rank : rank;
+      } 
+    }
+
+    public Boolean IsGreater(Card card)
+    {
+      if (suit == card.Suit)
+        return rank > card.Rank;
+      else
+      {
+        return suit == Game.pack.Trump();
+      }
     }
 
     public string Code {

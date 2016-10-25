@@ -9,38 +9,51 @@ namespace dotfool
   { 
     public override Boolean Attack()
     { 
+      return Get("move", this.Verify);
+    }
+
+    public override Boolean Defend()
+    {
+      return Get("response", this.CanBeat);
+    }
+
+    private Boolean Get(string action, Func<Card, Boolean> check)
+    {
       Card card;
       do 
       {
-        card = Input();
+        card = Input(action);
         if (card == null)
           return false;  // pass
-      } while (!Verify(card));
+      } while (!check(card));
       
       Pass(card);
       return true;
     }
 
-    public override Boolean Defend()
+    private Card Input(string action)
     {
-      Console.Write("Your response:");
-      return true;
-    }
-
-    private Card Input()
-    {
-      Console.Write("Your move: ");
+      Console.Write($"Your {action}: ");
       string choice = Console.ReadLine();
       if (choice == "p")
         return null;
       else
       {
-        int n = Convert.ToInt32(choice);
-        if (n < hand.Count)
-          return hand[n];
-        else
+        try
+          {
+            int n = int.Parse(choice);
+
+          if (n < hand.Count)
+            return hand[n];
+          else
+          {
+            Console.WriteLine("Use number of a hand card");
+            return null;
+          }
+        }
+        catch
         {
-          Console.WriteLine("Use number of a hand card");
+          Console.WriteLine($"Invalid input {choice}");
           return null;
         }
       } 
@@ -56,6 +69,12 @@ namespace dotfool
               where card.Rank == attack.Rank
               select card;
       return cards.Any();
+    }
+
+    Boolean CanBeat(Card defence)
+    {
+      Card attack = hand.Last();
+      return defence.IsGreater(attack);
     }
     
     public override void Show()
