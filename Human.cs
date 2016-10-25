@@ -7,23 +7,24 @@ namespace dotfool
 
   public class Human : Player 
   { 
-    public override Card Attack()
+    public override Boolean Attack()
     { 
       Card card;
       do 
       {
         card = Input();
         if (card == null)
-          return null;  // pass
+          return false;  // pass
       } while (!Verify(card));
       
       Pass(card);
-      return card;
+      return true;
     }
 
-    public override Card Defend(Card card)
+    public override Boolean Defend()
     {
       Console.Write("Your response:");
+      return true;
     }
 
     private Card Input()
@@ -67,7 +68,7 @@ namespace dotfool
 
     public override void Message()
     {
-      Console.WriteLine("Congrats! Engine is beaten ane takes the table");
+      Console.WriteLine("Congrats! Engine is beaten and takes the table");
     }
   }
 }

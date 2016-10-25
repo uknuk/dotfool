@@ -27,7 +27,6 @@ namespace dotfool
 
     protected void Pass(Card card)
     {
-      card.Show();
       hand.Remove(card);
       Game.table.Add(card);
     }
@@ -47,14 +46,14 @@ namespace dotfool
       return LeastRank(trump, -1);
     }
 
-    public virtual Card Attack()
+    public virtual Boolean Attack()
     {
-      return null;
+      return true;
     }
 
-    public virtual Card Defend(Card card)
+    public virtual Boolean Defend()
     {
-      return null;
+      return true;
     }
 
     public virtual void Show()
@@ -79,6 +78,7 @@ namespace dotfool
 
     public static void Main(string[] args)
     {
+      Console.WriteLine("New Game");
       while (true)
       {
         Play();
@@ -107,23 +107,26 @@ namespace dotfool
 
     static Boolean Act() 
     { 
+      if (table.Any())
+        ShowTable();
+
       players[0].Show();
-      Card attack = players[turn].Attack();
-      if (attack == null) 
+      if (!players[turn].Attack()) 
       {
         turn = 1 - turn;
         // future version will store table for engine
+        ShowTable();
         return false;
       }
 
-      Card resp = players[1 - turn].Defend(attack);
-      if (resp == null)
+      if (!players[1 - turn].Defend())
       {
         players[turn].Message();
+        ShowTable();
         return false;
       }
-      else
-        Console.WriteLine();
+      //else
+      //  ShowTable();
 
       return true;
     }
@@ -144,7 +147,19 @@ namespace dotfool
         else
           turn = HUMAN;
       }
-    }   
+    } 
+
+    static void ShowTable()
+    {
+      for (int i = 0; i < table.Count; i+= 2)
+      {
+        table[i].Show();
+        if (i + 1 < table.Count)
+          table[i+1].Show();
+        Console.Write("   ");
+      }
+      Console.WriteLine();
+    }  
   
   }    
 }
