@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace dotfool
 {
-  public class Player
+    public class Player
   {
     const int MinHand = 6;
     protected int trump;
@@ -19,9 +18,12 @@ namespace dotfool
     public void Fill()
     {
       int size = MinHand - hand.Count;
+      Card card;
       for (int i = 0; i < size; i++)
       {
-        hand.Add(Game.pack.Take());
+        card = Game.pack.Take();
+        if (card != null)
+          hand.Add(card);
       }
     }
 
@@ -33,12 +35,13 @@ namespace dotfool
 
     protected Card LeastRank(int suit, int rank)
     {
-      var cards = from card in hand
-                         where card.Suit == suit && card.Rank > rank
-                         orderby card.Rank
-                         select card;
+      var cards = 
+        from card in hand
+        where card.Suit == suit && card.Rank > rank
+        orderby card.Rank
+        select card;
 
-      return cards.Count() > 0 ? cards.First() : null;
+      return cards.Any() ? cards.First() : null;
     }
 
     public Card LeastTrump()
@@ -46,23 +49,40 @@ namespace dotfool
       return LeastRank(trump, -1);
     }
 
-    public Boolean Response() 
+    public Boolean Defend() 
     {
-      Boolean resp = Defend();
-      if (!resp)
+      Card card = Response();
+      if (card == null)
+      {
         hand.AddRange(Game.table);
+        return false;
+      }
+      else
+      {
+        Pass(card);
+        return true;
+      }
+    }
 
-      return resp; 
+    public Boolean Attack()
+    {
+      Card card = Move();
+      if (card != null)
+      {
+        Pass(card);
+        return true;
+      }
+      return false;
     }
     
-    public virtual Boolean Attack()
+    public virtual Card Move()
     {
-      return true;
+      return null;
     }
 
-    public virtual Boolean Defend()
+    public virtual Card Response()
     {
-      return true;
+      return null;
     }
 
     public virtual void Show()
@@ -71,6 +91,21 @@ namespace dotfool
     }
 
     public virtual void Message()
+    {
+      Console.WriteLine();
+    }
+
+    public Boolean HasWon()
+    {
+      if (!hand.Any())
+      {
+        Finish();
+        return true;
+      }
+      return false;
+    }
+
+    public virtual void Finish()
     {
       Console.WriteLine();
     }

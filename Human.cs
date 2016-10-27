@@ -1,34 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace dotfool
 {
 
-  public class Human : Player 
+    public class Human : Player 
   { 
-    public override Boolean Attack()
+    public override Card Move()
     { 
+      if (!hand.Any())
+        return null;
+        
       return Get("move", this.Verify);
     }
 
-    public override Boolean Defend()
+    public override Card Response()
     {
       return Get("response", this.CanBeat);
     }
 
-    private Boolean Get(string action, Func<Card, Boolean> check)
+    private Card Get(string action, Func<Card, Boolean> check)
     {
       Card card;
       do 
       {
         card = Input(action);
-        if (card == null)
-          return false;  // pass
-      } while (!check(card));
-      
-      Pass(card);
-      return true;
+      } while (card != null && !check(card));
+    
+      return card;
     }
 
     private Card Input(string action)
@@ -47,7 +46,7 @@ namespace dotfool
             return hand[n];
           else
           {
-            Console.WriteLine("Use number of a hand card");
+            Console.WriteLine("Use the number of a hand card");
             return null;
           }
         }
@@ -60,7 +59,7 @@ namespace dotfool
     }
 
     Boolean Verify(Card attack)
-    {
+    {     
       if (!Game.table.Any())
         return true;
             
@@ -73,12 +72,13 @@ namespace dotfool
 
     Boolean CanBeat(Card defence)
     {
-      Card attack = hand.Last();
+      Card attack = Game.table.Last();
       return defence.IsGreater(attack);
     }
     
     public override void Show()
     {
+      hand = hand.OrderBy(card => card.Rank).ToList();
       Console.Write("Your hand: ");
       for (int i = 0; i < hand.Count; i++)
         Console.Write($"{i}: {hand[i].Code}   ");
@@ -88,6 +88,11 @@ namespace dotfool
     public override void Message()
     {
       Console.WriteLine("Congrats! Engine is beaten and takes the table");
+    }
+
+    public override void Finish()
+    {
+      Console.WriteLine("Congrats! You won");
     }
   }
 }

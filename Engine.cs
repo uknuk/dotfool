@@ -4,44 +4,66 @@ using System.Linq;
 
 namespace dotfool
 {
-  public class Engine : Player
-  {
-    public override Boolean Defend()
+    public class Engine : Player
     {
-      Card aCard = Game.table.Last();
-      Card dCard = LeastRank(aCard.Suit, aCard.Rank);
-      
-      if (dCard == null)
-        dCard = LeastRank(trump, aCard.Rank);
-        
-      if (dCard != null)
-      {
-        Pass(dCard);
-        return true;
-      }
-        
-      return false;
+        public override Card Move()
+        {
+            IEnumerable<Card> cards;
+
+            if (!Game.table.Any())
+            {
+                cards =
+                  from card in hand
+                  orderby card.Value
+                  select card;
+            }
+            else
+            {
+                var ranks = Game.table.Select(card => card.Rank);
+                cards =
+                  from card in hand
+                  where ranks.Contains(card.Rank)
+                  orderby card.Value
+                  select card;
+            }
+
+            return cards.Any() ? cards.First() : null;
+        }
+
+        public override Card Response()
+        {
+           Card aCard = Game.table.Last();
+
+           var cards =
+              from card in hand
+              where card.IsGreater(aCard)
+              orderby card.Value
+              select card;
+
+            return cards.Any() ? cards.First() : null;
+        }
+
+        public override void Message()
+        {
+            Console.WriteLine("Sorry but you gotta take it");
+        }
+
+        public override void Finish()
+        {
+            Console.WriteLine("Condolences fool, you lost");
+        }
+
+        public override void Show()
+        {
+          if (!hand.Any())
+            return;
+
+          Console.Write("Remaining: ");
+          foreach (Card card in hand)
+            card.Show();
+          Console.WriteLine();
+        }
     }
 
-    public override Boolean Attack()
-    {
-      var cards = from card in hand 
-        where card.Suit != trump
-        orderby card.Rank select card;
-
-      if (cards.Any()) {
-        Pass(cards.First());
-        return true;
-      }
-
-      return false;
-    }
-
-    public override void Message()
-    {
-      Console.WriteLine("Sorry but you gotta take it");
-    }
-
-  } 
 }
 

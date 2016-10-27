@@ -102,6 +102,9 @@ namespace dotfool
 
     public Card Take()
     {
+      if (!order.Any())
+        return null;
+        
       int idx = order[0];
       order.RemoveAt(0);
       return cards[idx];

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace dotfool
 {
 
-  class Game
+    class Game
   {
     const int HUMAN = 0;
     const int ENGINE = 1;
@@ -18,13 +17,17 @@ namespace dotfool
     public static void Main(string[] args)
     {
       Console.WriteLine("New Game");
-      while (true)
+      Boolean play = true;
+      
+      while (play)
       {
-        Play();
+        play = Play();
       }
+
+      players[1].Show();
     }
 
-    static void Play()
+    static Boolean Play()
     {
 
       Boolean play = true;
@@ -37,39 +40,43 @@ namespace dotfool
       else
         table.Clear();
 
-      Console.WriteLine($"New act: {pack.TrumpCode()} {pack.Size()} cards left");
+      
+      Console.Write($"New act: {pack.TrumpCode()} ");
+      if (pack.Size() > 0)
+        Console.WriteLine($"{pack.Size()} cards left");
+      else
+        Console.WriteLine();
       
       do {  
         play = Act();
       } while (play);
+
+      foreach (Player player in players)
+        if (player.HasWon())
+          return false;
+
+      return true;
     }
 
     static Boolean Act() 
     { 
-      //if (table.Any())
-      //  ShowTable();
-
       players[0].Show();
-      if (!players[turn].Attack()) 
-      {
+      Boolean res = players[turn].Attack();
+      if (!res) 
         turn = 1 - turn;
-        // future version will store table for engine
-        ShowTable();
-        return false;
-      }
-
+       
       ShowTable();
-
-      if (!players[1 - turn].Response())
+ 
+      if (res) 
       {
-        players[turn].Message();
+        res = players[1 - turn].Defend();
+        if (!res)
+          players[turn].Message();
+        
         ShowTable();
-        return false;
       }
-      else
-        ShowTable();
-
-      return true;
+    
+      return res;
     }
       
     static void SetTurn()
