@@ -1,0 +1,15 @@
+﻿<Properties StartupItem="dotfool.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Engine.cs">
+    <Files>
+      <File FileName="Engine.cs" Line="30" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/bma/pr/cs/dotfool/Engine.cs" line="28" column="1" />
+      <Breakpoint file="/home/bma/pr/cs/dotfool/Engine.cs" line="30" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

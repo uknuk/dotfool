@@ -36,6 +36,11 @@ namespace dotfool
       string choice = Console.ReadLine();
       if (choice == "p")
         return null;
+      else if (choice == "d")
+      {
+        Game.ShowEngine();
+        return null;
+      }
       else
       {
         try
@@ -87,7 +92,7 @@ namespace dotfool
 
     public override void Message()
     {
-      Console.WriteLine("Congrats! Engine is beaten and takes the table");
+      Console.WriteLine("Engine surrenders, you can add more cards");
     }
 
     public override void Finish()

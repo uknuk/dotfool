@@ -32,20 +32,20 @@ namespace dotfool
 
         public override Card Response()
         {
-           Card aCard = Game.table.Last();
+            Card aCard = Game.table.Last();
 
-           var cards =
-              from card in hand
-              where card.IsGreater(aCard)
-              orderby card.Value
-              select card;
+            var cards =
+               from card in hand
+               where card.IsGreater(aCard)
+               orderby card.Value
+               select card;
 
             return cards.Any() ? cards.First() : null;
         }
 
         public override void Message()
         {
-            Console.WriteLine("Sorry but you gotta take it");
+            Console.WriteLine("Be ready to take more cards");
         }
 
         public override void Finish()
@@ -55,13 +55,13 @@ namespace dotfool
 
         public override void Show()
         {
-          if (!hand.Any())
-            return;
+            if (!hand.Any())
+                return;
 
-          Console.Write("Remaining: ");
-          foreach (Card card in hand)
-            card.Show();
-          Console.WriteLine();
+            Console.Write("Remaining: ");
+            foreach (Card card in hand)
+                card.Show();
+            Console.WriteLine();
         }
     }
 

@@ -5,7 +5,7 @@ using System.Linq;
 namespace dotfool
 {
 
-    class Game
+  class Game
   {
     const int HUMAN = 0;
     const int ENGINE = 1;
@@ -13,6 +13,7 @@ namespace dotfool
     public static List<Card> table = new List<Card>();
     static Player[] players = { new Human(), new Engine() };
     static int turn;
+    static Boolean surrender;
 
     public static void Main(string[] args)
     {
@@ -24,7 +25,8 @@ namespace dotfool
         play = Play();
       }
 
-      players[1].Show();
+      ShowEngine();
+      Console.ReadLine();
     }
 
     static Boolean Play()
@@ -46,36 +48,47 @@ namespace dotfool
         Console.WriteLine($"{pack.Size()} cards left");
       else
         Console.WriteLine();
-      
+
+      surrender = false;
+
       do {  
         play = Act();
+        foreach (Player player in players)
+          if (player.HasWon())
+            return false;
       } while (play);
-
-      foreach (Player player in players)
-        if (player.HasWon())
-          return false;
 
       return true;
     }
-
     static Boolean Act() 
     { 
-      players[0].Show();
+      if (!surrender)
+        players[0].Show();
+
       Boolean res = players[turn].Attack();
       if (!res) 
-        turn = 1 - turn;
-       
-      ShowTable();
- 
-      if (res) 
       {
-        res = players[1 - turn].Defend();
-        if (!res)
-          players[turn].Message();
-        
-        ShowTable();
+        Console.WriteLine("No more cards");
+        if (!surrender)
+          turn = 1 - turn;
       }
-    
+        
+      if (res)
+        ShowTable();
+ 
+      if (res && !surrender) 
+      {
+        if (!players[1 - turn].Defend())
+        {
+          surrender = true;
+          players[turn].Message();
+        }
+        else
+        {
+          ShowTable();
+        }     
+      }
+
       return res;
     }
       
@@ -102,12 +115,17 @@ namespace dotfool
       for (int i = 0; i < table.Count; i+= 2)
       {
         table[i].Show();
-        if (i + 1 < table.Count)
+        if (!surrender && i + 1 < table.Count)
           table[i+1].Show();
         Console.Write("   ");
       }
       Console.WriteLine();
-    }  
+    } 
+
+    static public void ShowEngine()
+    {
+      players[1].Show();
+    } 
   
   }    
 }
