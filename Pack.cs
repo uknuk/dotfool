@@ -15,6 +15,11 @@ namespace dotfool
       Code = code;
     }
 
+    public Card() 
+    {
+      Rank = -1;
+    }
+
     public int Suit { get; set; }
     public int Rank { get; set; }
     public string Code { get; set; }
@@ -24,13 +29,22 @@ namespace dotfool
       if (Suit == card.Suit)
         return Rank > card.Rank;
       else
-      {
-        return Suit == Game.pack.Trump();
-      }
+        return IsTrump();
     }
+    
     public void Show()
     {
       Console.Write($" {Code} ");
+    }
+
+    public Boolean IsTrump()
+    {
+      return Suit == Game.pack.Trump();
+    }
+
+    public Boolean IsValid()
+    {
+      return Rank != -1;
     }
         
   }           

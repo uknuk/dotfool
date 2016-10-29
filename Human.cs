@@ -7,17 +7,23 @@ namespace dotfool
 
   public class Human : Player 
   { 
-    readonly byte[] SMILE = {0x09, 0xF6, 0x01, 0x00};
+    readonly string SMILE = 
+      Encoding.UTF32.GetString(
+        new byte[]{0x09, 0xF6, 0x01, 0x00}
+      );
     public override Card Move()
     { 
       if (!hand.Any())
         return null;
-        
+
+      Show();
       return Get("move", this.Verify);
     }
 
     public override Card Response()
     {
+      Game.ShowTable();
+      Show();
       return Get("response", this.CanBeat);
     }
 
@@ -27,7 +33,7 @@ namespace dotfool
       do 
       {
         card = Input(action);
-      } while (card != null && !check(card));
+      } while (card != null && (!card.IsValid() || !check(card)));
     
       return card;
     }
@@ -36,13 +42,15 @@ namespace dotfool
     {
       Console.Write($"Your {action}: ");
       string choice = Console.ReadLine();
-      if (choice == "p")
-        return null;
-      else if (choice == "d")
+      Card dummy = new Card();
+
+      if (choice == "d")
       {
         Game.ShowEngine();
-        return null;
+        return dummy;
       }
+      else if (choice == "p")
+        return null;
       else
       {
         try
@@ -54,13 +62,13 @@ namespace dotfool
           else
           {
             Console.WriteLine("Use the number of a hand card");
-            return null;
+            return dummy;
           }
         }
         catch
         {
           Console.WriteLine($"Invalid input {choice}");
-          return null;
+          return dummy;
         }
       } 
     }
@@ -95,11 +103,12 @@ namespace dotfool
     public override void Message()
     {
       Console.WriteLine("Engine surrenders, you can add more cards");
+      Game.ShowTable();
     }
 
     public override void Finish()
     {
-      Console.WriteLine($"{Encoding.UTF32.GetString(SMILE)} Congrats! You won");
+      Console.WriteLine($"{SMILE} Congrats! You won");
     }
   }
 }

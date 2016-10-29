@@ -62,20 +62,13 @@ namespace dotfool
     }
     static Boolean Act() 
     { 
-      if (!surrender)
-        players[0].Show();
-
       Boolean res = players[turn].Attack();
       if (!res) 
       {
-        Console.WriteLine("No more cards");
         if (!surrender)
           turn = 1 - turn;
       }
         
-      if (res)
-        ShowTable();
- 
       if (res && !surrender) 
       {
         if (!players[1 - turn].Defend())
@@ -86,7 +79,7 @@ namespace dotfool
         else
         {
           ShowTable();
-        }     
+        }    
       }
 
       return res;
@@ -110,7 +103,7 @@ namespace dotfool
       }
     } 
 
-    static void ShowTable()
+    static public void ShowTable()
     {
       for (int i = 0; i < table.Count; i+= 2)
       {

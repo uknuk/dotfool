@@ -7,7 +7,10 @@ namespace dotfool
 {
     public class Engine : Player
     {
-        readonly byte[] CRY = {0x22, 0xF6, 0x01, 0x00};
+        readonly string CRY = 
+            Encoding.UTF32.GetString(
+                new byte[]{0x22, 0xF6, 0x01, 0x00}
+            );
         public override Card Move()
         {
             IEnumerable<Card> cards;
@@ -22,9 +25,15 @@ namespace dotfool
             else
             {
                 var ranks = Game.table.Select(card => card.Rank);
+                Random rnd = new Random();
+                double probTrump = Math.Log(1 + 1.0/Game.pack.Size()*Math.E);
+
                 cards =
                   from card in hand
-                  where ranks.Contains(card.Rank)
+                  where ranks.Contains(card.Rank) &&
+                    !card.IsTrump() ||
+                    (card.IsTrump() && rnd.NextDouble() < probTrump)
+                  
                   orderby card.Value
                   select card;
             }
@@ -52,7 +61,7 @@ namespace dotfool
 
         public override void Finish()
         {
-            Console.WriteLine($"{Encoding.UTF32.GetString(CRY)} Condolences fool, you lost");
+            Console.WriteLine($"{CRY} Condolences fool, you lost");
         }
 
         public override void Show()

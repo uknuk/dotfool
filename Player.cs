@@ -72,6 +72,9 @@ namespace dotfool
         Pass(card);
         return true;
       }
+      else 
+        Console.WriteLine("Attack ends");
+        
       return false;
     }
     
