@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 namespace dotfool
 {
 
-    public class Human : Player 
+  public class Human : Player 
   { 
+    readonly byte[] SMILE = {0x09, 0xF6, 0x01, 0x00};
     public override Card Move()
     { 
       if (!hand.Any())
@@ -97,7 +99,7 @@ namespace dotfool
 
     public override void Finish()
     {
-      Console.WriteLine("Congrats! You won");
+      Console.WriteLine($"{Encoding.UTF32.GetString(SMILE)} Congrats! You won");
     }
   }
 }

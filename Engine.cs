@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace dotfool
 {
     public class Engine : Player
     {
+        readonly byte[] CRY = {0x22, 0xF6, 0x01, 0x00};
         public override Card Move()
         {
             IEnumerable<Card> cards;
@@ -50,7 +52,7 @@ namespace dotfool
 
         public override void Finish()
         {
-            Console.WriteLine("Condolences fool, you lost");
+            Console.WriteLine($"{Encoding.UTF32.GetString(CRY)} Condolences fool, you lost");
         }
 
         public override void Show()

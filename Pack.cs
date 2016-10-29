@@ -7,53 +7,30 @@ namespace dotfool
 {
 
   public class Card
-  {
-    private int rank;
-    private int suit;
-    private string code;
-
+  {    
     public Card(int suit, int rank, string code)
     {
-      this.rank = rank;
-      this.suit = suit;
-      this.code = code;
+      Rank = rank;
+      Suit = suit;
+      Code = code;
     }
 
-    public int Suit 
-    {
-      get { return suit; }
-    }
-
-    public int Rank 
-    {
-      get { return rank; }
-    }
-
-    public int Value 
-    {
-      get 
-      {
-        return suit == Game.pack.Trump() ? 10 + rank : rank;
-      } 
-    }
-
+    public int Suit { get; set; }
+    public int Rank { get; set; }
+    public string Code { get; set; }
+    public int Value => Suit == Game.pack.Trump() ? 10 + Rank : Rank;
     public Boolean IsGreater(Card card)
     {
-      if (suit == card.Suit)
-        return rank > card.Rank;
+      if (Suit == card.Suit)
+        return Rank > card.Rank;
       else
       {
-        return suit == Game.pack.Trump();
+        return Suit == Game.pack.Trump();
       }
     }
-
-    public string Code {
-      get { return code; }
-    }
-
     public void Show()
     {
-      Console.Write($" {code} ");
+      Console.Write($" {Code} ");
     }
         
   }           

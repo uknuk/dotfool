@@ -115,7 +115,7 @@ namespace dotfool
       for (int i = 0; i < table.Count; i+= 2)
       {
         table[i].Show();
-        if (!surrender && i + 1 < table.Count)
+        if (i + 1 < table.Count)
           table[i+1].Show();
         Console.Write("   ");
       }
