@@ -74,7 +74,7 @@ namespace dotfool
       }
       else 
         Console.WriteLine("Attack ends");
-        
+
       return false;
     }
     
@@ -112,5 +112,10 @@ namespace dotfool
     {
       Console.WriteLine();
     }
+
+      public int Size()
+      {
+          return hand.Count();
+      }
   }
 }

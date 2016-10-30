@@ -26,14 +26,12 @@ namespace dotfool
             {
                 var ranks = Game.table.Select(card => card.Rank);
                 Random rnd = new Random();
-                double probTrump = Math.Log(1 + 1.0/Game.pack.Size()*Math.E);
+                double probTrump = ProbTrump();
 
                 cards =
                   from card in hand
-                  where ranks.Contains(card.Rank) &&
-                    !card.IsTrump() ||
-                    (card.IsTrump() && rnd.NextDouble() < probTrump)
-                  
+                  where ranks.Contains(card.Rank)
+                  where  !card.IsTrump() || rnd.NextDouble() < probTrump
                   orderby card.Value
                   select card;
             }
@@ -51,7 +49,15 @@ namespace dotfool
                orderby card.Value
                select card;
 
-            return cards.Any() ? cards.First() : null;
+            Card dCard = cards.Any() ? cards.First() : null;
+
+            if (dCard != null && dCard.IsTrump())
+            {
+                return (new Random()).NextDouble() < ProbTrump() ? dCard : null;
+            }
+                
+            
+            return dCard;
         }
 
         public override void Message()
@@ -74,6 +80,12 @@ namespace dotfool
                 card.Show();
             Console.WriteLine();
         }
+
+        private double ProbTrump()
+        {
+            return Math.Log(1 + 1.0/Game.pack.Size()*Math.E);
+        }
+      
     }
 
 }

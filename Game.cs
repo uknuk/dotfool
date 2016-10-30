@@ -19,6 +19,11 @@ namespace dotfool
     {
       Console.WriteLine("New Game");
       Boolean play = true;
+
+      foreach (Player p in players) 
+        p.Fill();
+
+      SetTurn();
       
       while (play)
       {
@@ -33,21 +38,14 @@ namespace dotfool
     {
 
       Boolean play = true;
-
-      foreach (Player p in players) 
-        p.Fill();
-      
-      if (!table.Any())
-        SetTurn();
-      else
-        table.Clear();
+      table.Clear();
 
       
       Console.Write($"New act: {pack.TrumpCode()} ");
       if (pack.Size() > 0)
         Console.WriteLine($"{pack.Size()} cards left");
       else
-        Console.WriteLine();
+        Console.WriteLine($"Engine has {players[ENGINE].Size()} cards");
 
       surrender = false;
 
@@ -65,8 +63,10 @@ namespace dotfool
       Boolean res = players[turn].Attack();
       if (!res) 
       {
-        if (!surrender)
-          turn = 1 - turn;
+          players[turn].Fill();
+          players[1 - turn].Fill();
+          if (!surrender)
+            turn = 1 - turn;
       }
         
       if (res && !surrender) 
