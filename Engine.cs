@@ -53,7 +53,7 @@ namespace dotfool
 
             if (dCard != null && dCard.IsTrump())
             {
-                return (new Random()).NextDouble() < ProbTrump() ? dCard : null;
+                return respTrump(dCard, aCard) ? dCard : null;
             }
                 
             
@@ -79,6 +79,12 @@ namespace dotfool
             foreach (Card card in hand)
                 card.Show();
             Console.WriteLine();
+        }
+
+        private Boolean respTrump(Card dCard, Card aCard)
+        {
+            return Game.pack.Size() < 12 || 
+                (dCard.Rank < 5 && aCard.Rank < 5);
         }
 
         private double ProbTrump()
